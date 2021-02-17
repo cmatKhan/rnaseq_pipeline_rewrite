@@ -2,11 +2,11 @@
 
 # TODO: FIND BETTER WAY OF DOING DOCSTRING/HELP
 #  wrapper for novoalign accepting a subset of the novoalign settings
-#  usage RunNovoalign -i /path/to/novoalign_index.idx -f /path/to/reads.fq.gz -c num_cpus
+#  usage RunNovoalign -i /path/to/novoalign_index.idx -f /path/to/reads.fastq.gz -c num_cpus
 
 #  input:
 #      -i --index is the path to the novoalign index file (see novoalign documentation)
-#      -f --fastq is the path to the fastq file. The extension must be .fq.gz
+#      -f --fastq is the path to the fastq file. The extension must be .fq.gz or .fastq.gz
 #      -c --num_cpus is the number of cpus
   
 #  variable name definitions:
@@ -30,9 +30,12 @@ main(){
   #   echo "RunNovalignError: novoalign not found in path"
   #   exit 1
   # fi
-
-  # local fastq_basename=$(basename ${args[3]})
-  # local fastq_simple_name=${$fastq_path%.fq.gz}
+  
+  # TODO: CLEAN THIS UP (NOTE: checkInput does check that the file end in one of these two extensions)
+  # local fastq_basename=$(basename $fastq_path)
+  # local fastq_simple_name=${fastq_basename%.gz}
+  # local fastq_simple_name=${fastq_basename%.fq}
+  # local fastq_simple_name=${fastq_basename%.fastq}
 
   # novoalign -r All \\
   #           -c $num_cpus\\
@@ -54,7 +57,7 @@ checkInput(){
       echo "RunNovoalignInputError: fastq file does not exist"
       exit 1
   fi
-  if [[ ${fastq_path#*.} != .fq.gz ]]; then
+  if [[ ${fastq_path#*.} != .fq.gz | ${fastq_path#*.} != .fastq.gz  ]]; then
       echo "RunNovoalignInputError: fastq path does not end with .fq.gz, the required extension for fastq files"
       exit 1
   fi 
