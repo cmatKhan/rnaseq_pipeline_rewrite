@@ -57,7 +57,7 @@ checkInput(){
       echo "RunNovoalignInputError: fastq file does not exist"
       exit 1
   fi
-  if [[ !(${fastq_path#*.} == .fq.gz || ${fastq_path#*.} == .fastq.gz)  ]]; then
+  if [[ !(${fastq_path#*.} == .fq.gz && ${fastq_path#*.} == .fastq.gz)  ]]; then
       echo "RunNovoalignInputError: fastq path does not end with .fq.gz or .fastq.gz. One of the two is the required extension for fastq files."
       exit 1
   fi 
