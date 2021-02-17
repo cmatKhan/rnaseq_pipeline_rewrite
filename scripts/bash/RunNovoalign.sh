@@ -23,13 +23,13 @@ main(){
   parseArgs "$@"
   checkInput
 
-  # # check if novoalign is available on the system
-  # # cite: https://stackoverflow.com/a/677212/9708266
-  # if ! command -v novoalign &> /dev/null
-  # then
-  #   echo "RunNovalignError: novoalign not found in path"
-  #   exit 1
-  # fi
+  # check if novoalign is available on the system
+  # cite: https://stackoverflow.com/a/677212/9708266
+  if ! command -v novoalign &> /dev/null
+  then
+    echo "RunNovalignError: novoalign not found in path"
+    exit 1
+  fi
   
   # TODO: CLEAN THIS UP (NOTE: checkInput does check that the file end in one of these two extensions)
   # local fastq_basename=$(basename $fastq_path)
