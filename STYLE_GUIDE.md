@@ -1,15 +1,9 @@
 # Style
 
 ### general
--all executables should start with a shebang line including env, eg #!/usr/bin/env python or #!/usr/bin/env nextflow  
-#### Idiosyncracies (please let these conventions override any contradictions in the style guides below)
-- variables which start data are underscored, eg combined_df
-- functions are camelCase, eg doSomething() 
-- main methods go at the top of a script, not the bottom
-- variable names should be descriptive
-- within reason, everything should be described with an inline comment
+- all executables should start with a shebang line including env, eg #!/usr/bin/env python or #!/usr/bin/env nextflow  
 - docstrings for all scripts and functions should look like this:  
-'''
+```
 def doSomething(arg1, arg2, *args, **kwargs):  
    """
       this is my description. Explain the variable entries somewhere, maybe in the params, maybe here
@@ -20,7 +14,15 @@ def doSomething(arg1, arg2, *args, **kwargs):
       :returns: some value
    """
    raise NotImplementedError
-'''  
+```  
+
+### Idiosyncracies (please let these conventions override any contradictions in the style guides below)
+- variables which start data are underscored, eg combined_df
+- functions are camelCase, eg doSomething() 
+- main methods go at the top of a script, not the bottom
+- variable names should be descriptive
+- within reason, everything should be described with an inline comment
+
 ### bash style guide
 https://google.github.io/styleguide/shellguide.html
 
