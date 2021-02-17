@@ -3,6 +3,7 @@
 # TODO: FIND BETTER WAY OF DOING DOCSTRING/HELP
 #  wrapper for novoalign accepting a subset of the novoalign settings
 #  usage RunNovoalign -i /path/to/novoalign_index.idx -f /path/to/reads.fastq.gz -c num_cpus
+#  author: chase mateusiak chase.mateusiak@gmail.com
 
 #  input:
 #      -i --index is the path to the novoalign index file (see novoalign documentation)
@@ -16,9 +17,7 @@
 #           2> fastq_simple_name_novoalign.log
 
 main(){
-  # """
-  #     main method, called at bottom of script after all functions read in
-  # """
+  # main method, called at bottom of script after all functions read in
 
   parseArgs "$@"
   checkInput
@@ -32,18 +31,18 @@ main(){
   fi
   
   # TODO: CLEAN THIS UP (NOTE: checkInput does check that the file end in one of these two extensions)
-  # local fastq_basename=$(basename $fastq_path)
-  # local fastq_simple_name=${fastq_basename%.gz}
-  # local fastq_simple_name=${fastq_basename%.fq}
-  # local fastq_simple_name=${fastq_basename%.fastq}
+  local fastq_basename=$(basename $fastq_path)
+  local fastq_simple_name=${fastq_basename%.gz}
+  local fastq_simple_name=${fastq_basename%.fq}
+  local fastq_simple_name=${fastq_basename%.fastq}
 
-  # novoalign -r All \\
-  #           -c $num_cpus\\
-  #           -o SAM \\
-  #           -d $index_path \\
-  #           -f $fastq_path \\
-  #             1> ${fastq_simple_name}.sam \\
-  #             2> ${fastq_simple_name}_novoalign.log 
+  novoalign -r All \\
+            -c $num_cpus\\
+            -o SAM \\
+            -d $index_path \\
+            -f $fastq_path \\
+              1> ${fastq_simple_name}.sam \\
+              2> ${fastq_simple_name}_novoalign.log 
 }
 
 checkInput(){
@@ -69,6 +68,7 @@ checkInput(){
 
 parseArgs(){
   #    parse cmd line input, set global variables
+  #    usage: Assuming this is called from main, and the entire cmd line argument array was passed to main, parseArgs "$@"
   #    input: cmd line input passed in main method via $@
 
   while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
