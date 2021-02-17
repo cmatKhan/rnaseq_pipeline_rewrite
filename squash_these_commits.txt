@@ -1,0 +1,21 @@
+d2adbbe debugging novoalign script
+f188ea4 debugging novoalign script
+4de9eb1 debugging novoalign script
+10a4e75 debugging novoalign script
+a919f9c debugging novoalign script
+8de5e5d debugging novoalign script
+21e4dab debugging novoalign script
+5d3ce70 debugging novoalign script
+8ddf339 debugging novoalign script
+55b8e33 debugging novoalign script
+813f751 debugging novoalign script
+b4d0ef0 debugging novoalign script
+b852d5a debugging novoalign script
+8a025f8 debugging novoalign script
+0881592 debugging novoalign script
+d8a7682 updates to style guide, adding nextflow code
+19a8224 updates to style guide, adding nextflow code;
+2767265 updates to style guide, adding nextflow code;
+f85c4ea typo
+e6420a9 pushing directory structure
+1ddc710 pushing directory structure
