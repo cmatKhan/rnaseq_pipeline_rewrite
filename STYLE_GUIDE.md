@@ -2,15 +2,16 @@
 
 ### general
 - all executables should start with a shebang line including env, eg #!/usr/bin/env python or #!/usr/bin/env nextflow  
-- docstrings for all scripts and functions should look like this:  
+- docstrings should go at the top of all scripts with a usage example and input explanations.
+- Python functions should be documented like so:  
 ```
 def doSomething(arg1, arg2, *args, **kwargs):  
    """
       this is my description. Explain the variable entries somewhere, maybe in the params, maybe here
       usage: doSomething(arg1)
-      :throws: any errors that the function throws. To the extent possible, check input and handle errors with a descriptive message. functions should throw errors to be caught in calling script.
       :params arg1: description
       :params arg2: description
+      :throws: any errors that the function throws. To the extent possible, check input and handle errors with a descriptive message. functions should throw errors to be caught in calling script.
       :returns: some value
    """
    raise NotImplementedError
@@ -27,7 +28,7 @@ def doSomething(arg1, arg2, *args, **kwargs):
 https://google.github.io/styleguide/shellguide.html
 
 ### R style guide
-The first is a derivative (extremely short) of the second.
+The first is a derivative (extremely short) of the second.  
 https://google.github.io/styleguide/Rguide.html  
 http://adv-r.had.co.nz/Style.html
 
