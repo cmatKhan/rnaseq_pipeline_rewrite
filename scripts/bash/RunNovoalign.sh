@@ -36,13 +36,15 @@ main(){
   local fastq_simple_name=${fastq_basename%.fq}
   local fastq_simple_name=${fastq_basename%.fastq}
 
-  novoalign -r All \\
-            -c $num_cpus\\
-            -o SAM \\
-            -d $index_path \\
-            -f $fastq_path \\
-              1> ${fastq_simple_name}.sam \\
-              2> ${fastq_simple_name}_novoalign.log 
+  echo "$fastq_path, $index_path, $num_cpus"
+
+  # novoalign -r All \\
+  #           -c ${num_cpus}\\
+  #           -o SAM \\
+  #           -d ${index_path} \\
+  #           -f ${fastq_path} \\
+  #             1> ${fastq_simple_name}.sam \\
+  #             2> ${fastq_simple_name}_novoalign.log 
 }
 
 checkInput(){

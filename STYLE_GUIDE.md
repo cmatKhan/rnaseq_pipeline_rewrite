@@ -25,7 +25,9 @@ def doSomething(arg1, arg2, *args, **kwargs):
 - within reason, everything should be described with an inline comment
 
 ### bash style guide
-https://google.github.io/styleguide/shellguide.html
+https://google.github.io/styleguide/shellguide.html  
+please see scripts/bash/RunNovoalign.sh for an example, and please feel free to use the styleguide to critique this script and update it as necessary to comply.  
+Otherwise, please use the script as a template for other bash scripts for the sake of consistency.
 
 ### R style guide
 The first is a derivative (extremely short) of the second.  
