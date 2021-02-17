@@ -1,8 +1,8 @@
 # Style
 
 ### general
-all executables should start with a shebang line including env, eg #!/usr/bin/env python or #!/usr/bin/env nextflow  
-Idiosyncracies (please let these conventions override any contradictions in the style guides below)
+-all executables should start with a shebang line including env, eg #!/usr/bin/env python or #!/usr/bin/env nextflow  
+#### Idiosyncracies (please let these conventions override any contradictions in the style guides below)
 - variables which start data are underscored, eg combined_df
 - functions are camelCase, eg doSomething() 
 - main methods go at the top of a script, not the bottom
