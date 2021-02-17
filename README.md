@@ -1,1 +1,1 @@
-#rnaseq_pipeline re-write integrating nextflow and database interaction
+# rnaseq_pipeline re-write integrating nextflow and database interaction
