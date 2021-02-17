@@ -33,8 +33,8 @@ main(){
   # TODO: CLEAN THIS UP (NOTE: checkInput does check that the file end in one of these two extensions)
   local fastq_basename=$(basename $fastq_path)
   local fastq_simple_name=${fastq_basename%.gz}
-  local fastq_simple_name=${fastq_basename%.fq}
-  local fastq_simple_name=${fastq_basename%.fastq}
+  local fastq_simple_name=${fastq_simple_name%.fq}
+  local fastq_simple_name=${fastq_simple_name%.fastq}
 
   novoalign -r All -c ${num_cpus} -o SAM -d ${index_path} -f ${fastq_path} 1> ${fastq_simple_name}.sam 2> ${fastq_simple_name}_novoalign.log 
 }
