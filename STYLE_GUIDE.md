@@ -1,20 +1,16 @@
-#Style
+# Style
 
-variables which start data are underscored, eg combined_df
-
-functions are camelCase, eg doSomething()
-
-all scripts should start with a shebang line including env, eg #!/usr/bin/env python or #!/usr/bin/env nextflow
-
-dependencies go under the shebang
-
-for scripts meant to run from the cmd line, main method goes under the dependencies (at the top rather than the bottom of the script).
-
-try for descriptive variable names and frequent comments
-
-docstrings should go at the top of every script, and under every function declaration. For python, use this format for function definitions:
-
-def doSomething(arg1, arg2, *args, **kwargs):
+### general
+all executables should start with a shebang line including env, eg #!/usr/bin/env python or #!/usr/bin/env nextflow  
+Idiosyncracies (please let these conventions override any contradictions in the style guides below)
+- variables which start data are underscored, eg combined_df
+- functions are camelCase, eg doSomething() 
+- main methods go at the top of a script, not the bottom
+- variable names should be descriptive
+- within reason, everything should be described with an inline comment
+- docstrings for all scripts and functions should look like this:  
+'''
+def doSomething(arg1, arg2, *args, **kwargs):  
    """
       this is my description. Explain the variable entries somewhere, maybe in the params, maybe here
       usage: doSomething(arg1)
@@ -24,3 +20,18 @@ def doSomething(arg1, arg2, *args, **kwargs):
       :returns: some value
    """
    raise NotImplementedError
+'''  
+### bash style guide
+https://google.github.io/styleguide/shellguide.html
+
+### R style guide
+The first is a derivative (extremely short) of the second.
+https://google.github.io/styleguide/Rguide.html  
+http://adv-r.had.co.nz/Style.html
+
+### python style guide (note idiosyncratic exceptions)
+https://www.python.org/dev/peps/pep-0008/  
+
+### Nextflow
+An official style guide doesn't yet exist. However, please use this as a guide:
+- https://github.com/nf-core/rnaseq  
