@@ -6,5 +6,8 @@ results/
 tests/
 testing/
 testing*
+*/__pycache___
+scripts/python/rnaseq_tools/__pycache___
+scripts/python/__pycache___
 *.pyc
 .idea/*
