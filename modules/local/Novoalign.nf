@@ -16,49 +16,12 @@ process novoalign {
         tuple val(fastq_file_number), val(run_directory), val(fastq_simple_name), val(organism), val(strandedness), file("${fastq_simple_name}_sorted_aligned_reads.bam") into bam_align_ch
         tuple val(run_directory), file("${fastq_simple_name}_novoalign.log"), file("${fastq_simple_name}_novosort.log") into novoalign_log_ch
 
-    script:
-        fastq_simple_name = fastq_file.getSimpleName()
-        if (organism == 'S288C_R64')
-            """
-            novoalign -r All \\
-                      -c 8 \\
-                      -o SAM \\
-                      -d ${params.S288C_R64_novoalign_index} \\
-                      -f ${fastq_file} 2> ${fastq_simple_name}_novoalign.log | \\
-            samtools view -bS | \\
-            novosort - \\
-                     --threads 8 \\
-                     --markDuplicates \\
-                     -o ${fastq_simple_name}_sorted_aligned_reads.bam 2> ${fastq_simple_name}_novosort.log
+#   output: 1> ${output_file_name}.sam
+#           2> ${output_file_name}_novoalign.log
 
+    script:
             """
-        else if (organism == 'KN99')
-            """
-            novoalign -r All \\
-                      -c 8 \\
-                      -o SAM \\
-                      -d ${params.KN99_novoalign_index} \\
-                      -f ${fastq_file} 2> ${fastq_simple_name}_novoalign.log | \\
-            samtools view -bS | \\
-            novosort - \\
-                     --threads 8 \\
-                     --markDuplicates \\
-                     --index \\
-                     -o ${fastq_simple_name}_sorted_aligned_reads.bam 2> ${fastq_simple_name}_novosort.log
-            """
-        else if (organism == 'H99')
-            """
-            novoalign -r All \\
-                      -c 8 \\
-                      -o SAM \\
-                      -d ${params.H99_novoalign_index} \\
-                      -f ${fastq_file} \\
-                      2> ${fastq_simple_name}_novoalign.log | \\
-            samtools view -bS | \\
-            novosort - \\
-                     --threads 8 \\
-                     --markDuplicates \\
-                     -o ${fastq_simple_name}_sorted_aligned_reads.bam 2> ${fastq_simple_name}_novosort.log
+            RunNovoalign.sh -i /path/to/index -f /path/to/fastq -o output_file_name -c num_cpus
 
             """
 }

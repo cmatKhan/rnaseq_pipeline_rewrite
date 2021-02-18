@@ -64,7 +64,7 @@ parseArgs(){
 
   while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
     -h | --help )
-      $(head -16 $0)
+      head -16 $0
       exit
       ;;
     -i | --index )

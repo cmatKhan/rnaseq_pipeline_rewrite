@@ -1,16 +1,5 @@
     #!/usr/bin/env python
 
-   # TODO: TEST POST TO DATABASE ARGUMENT
-
-    """
-        Parse htseq output (two columns first locus, second count) and output/send to database
-        usage:
-        author: chase.mateusiak@gmail.com
-
-        output: ${sample_name}_counts.csv, ${sample_name}_htseq_qc.csv
-        database_interaction: post to url
-    """
-
     # TODO: generalize this into a function with variable id, data columns?
 
     # standard library imports
@@ -63,11 +52,10 @@
         data = {'fastqFileNumber': args.fastq_file_number, 'rawCounts': json.dumps(gene_count_dict)}
 
         # try to send count data to database, exit with error message if fail
-        if args.feature:
-            try:
-                utils.postData(args.url, data)
-            except(HTTPError):
-                exit('PostCountsToDatabaseError: fastqfilenumber %s failed to update %s' %(fastq_file_number, url)
+        try:
+            utils.postData(args.url, data)
+        except(HTTPError):
+            exit('PostCountsToDatabaseError: fastqfilenumber %s failed to update %s' %(fastq_file_number, url)
 
     }
 
@@ -81,11 +69,6 @@
                             help="[REQUIRED] fastqFileNumber, the foreign key of QualityAssessment table which links back to FastqFiles table")
         parser.add_argument("-u", "--url",
                             help="[REQUIRED] URL to which to post data (this is purpose built for counts, so it should be https://someaddress/Counts/")
-        parser.add_argument('--post', dest='post', action='store_true'
-                            help="[DEFAULT TRUE] default behavior is to post to the database. set --no-post to avoid this")
-        parser.add_argument('--no-post', dest='post', action='store_false',
-                            help="See --post. Set --no-post to prevent posting the data to the url"))
-        parser.set_defaults(post=True)
         args = parser.parse_args(argv[1:])
         return args
 

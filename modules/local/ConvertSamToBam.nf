@@ -16,13 +16,10 @@ process novoalign {
         tuple val(fastq_file_number), val(run_directory), val(fastq_simple_name), val(organism), val(strandedness), file("${fastq_simple_name}_sorted_aligned_reads.bam") into bam_align_ch
         tuple val(run_directory), file("${fastq_simple_name}_novoalign.log"), file("${fastq_simple_name}_novosort.log") into novoalign_log_ch
 
-    
-#   output: 1> ${output_file_name}_sorted.bam
-#           2> ${output_file_name}_novosort.log
+#   output: 1> sam_simple_name.bam
 
     script:
-        """
-        RunNovosort.sh -b /bamfile/path -o output_file_name -t num_threads
-
-        """
+            """
+            ConvertSamToBam.sh -s /path/to/sam -output_file_name
+            """
 }

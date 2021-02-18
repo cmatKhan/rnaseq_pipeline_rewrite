@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
 
 # TODO: FIND BETTER WAY OF DOING DOCSTRING/HELP
-#  wrapper for samtools view to convert sam to bam
+#  calculate coverage over every bp of genome
+#  usage: GenomeCoverage.sh -a /path/to/annotation/file -b /path/to/bam -o output_file_name
 #  author: chase mateusiak chase.mateusiak@gmail.com
 
 #  input:
 #      -h --help should display this docstring
-#      -s --sam_path path to sam file
-#      -o --output_file_name NO PERIODS NO FILE EXTENSIONS
+#      -a --annotation file path
+#      -b --bam_file path to bam file
+#      -o --output filename NO PERIODS NO FILE EXTENSIONS
 
-#   output: 1> sam_simple_name.bam
+#   output: 1> ${output_file_name}_coverage.bed
 
 # utils.sh needs to be in the same directory as this script
 source ./utils.sh
+
+# TODO: store gff2bed annotation file output in genome_files
 
 main(){
   # main method, called at bottom of script after all functions read in
@@ -22,27 +26,27 @@ main(){
   # verify cmd line input
   checkInput
   # check that necessary software is available
-  checkPath samtools "ConvertSamToBamError: samtools not found in PATH"
+  checkPath gff2bed "GenomeCoverageError: gff2bed not found in PATH"
+  # check that necessary software is available
+  checkPath samtools "GenomeCoverageError: samtools not found in PATH"
 
-  local sam_basename=$(basename $sam_path)
-  local sam_simple_name=${sam_basename%.sam}
+  cat $annotation_file_gff | gff2bed | samtools depth -aa -Q 10 -b - $bam_file > ${output_file_name}_coverage.bed
 
-  samtools view -bS $sam_path 1> ${output_file_name}.bam
 }
 
 checkInput(){
   # check input, raise errors
   # TODO: should this go to 2 or 1?
-  if [[ ! -e $sam_path ]]; then
-      echo "ConvertSamToBamInputError: the sam file ${sam_path} does not exist"
+  if [[ ! -e $annotation_file_gff ]]; then
+      echo "GenomeCoverageError: bam_file does not exist"
+      exit 1
+  fi
+  if [[ -z $bam_file ]]; then
+      echo "GenomeCoverageError: output_file_name file does not exist"
       exit 1
   fi
   if [[ -z $output_file_name ]]; then
-      echo "ConvertSamToBamInputError: output_file_name file does not exist"
-      exit 1
-  fi
-  if [[ !(${sam_path#*.} == sam || ${fastq_path#*.} == fastq.gz)  ]]; then
-      echo "ConvertSamToBamInputError: the sam file does not end in .sam"
+      echo "GenomeCoverageError: output_file_name not specified"
       exit 1
   fi 
 }
@@ -57,8 +61,11 @@ parseArgs(){
       head -16 $0
       exit
       ;;
-    -s | --sam_path )
-      shift; sam_path=$1
+    -a | --annotation_file_gff )
+      shift; annotation_file_gff=$1
+      ;;
+    -b | --bam_file )
+      shift; bam_file=$1
       ;;
     -o | --output_file_name )
       shift; output_file_name=$1

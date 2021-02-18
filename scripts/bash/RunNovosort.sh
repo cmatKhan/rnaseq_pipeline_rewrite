@@ -57,14 +57,14 @@ parseArgs(){
 
   while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
     -h | --help )
-      $(head -16 $0)
+      head -16 $0
       exit
       ;;
     -b | --bam_file )
-      shift; index_path=$1
+      shift; bam_file=$1
       ;;
     -o | --output_file_name )
-      shift; fastq_path=$1
+      shift; output_file_name=$1
       ;;
     -t | --num_threads )
       shift; num_threads=$1

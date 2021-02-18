@@ -20,76 +20,14 @@ process htseq_count {
         tuple val(run_directory), val(fastq_simple_name), file("${fastq_simple_name}_htseq.log") into htseq_log_ch
         tuple val(run_directory), val(organism), val(strandedness) into pipeline_info_ch
 
+#   output: -o ${output_file_name}_htseq_annote.sam (this is a file with the same number of lines as the input bam and gives a flag eg XF:CNAG_12345 for the feature count to which the read contributed)
+#           1> ${output_file_name}_read_count.tsv
+#           2> ${output_file_name}_htseq.log
+
     script:
-        if (organism == 'S288C_R64')
-            """
-            htseq-count -f bam \\
-                        -o ${fastq_simple_name}_htseq_annote.sam \\
-                        -s ${strandedness} \\
-                        -t gene \\
-                        -i ID \\
-                        ${sorted_bam} \\
-                        ${params.S288C_R64_annotation_file} \\
-                        1> ${fastq_simple_name}_read_count.tsv 2> ${fastq_simple_name}_htseq.log
-
-            sed "s/\t//" ${fastq_simple_name}_htseq_annote.sam > ${fastq_simple_name}_no_tab_sam.sam
-
-            samtools view --threads 8 ${sorted_bam} | \\
-            paste - ${fastq_simple_name}_no_tab_sam.sam | \\
-            samtools view --threads 8 -bS -T ${params.S288C_R64_genome} > ${fastq_simple_name}_sorted_aligned_reads_with_annote.bam
-
-            """
-        else if (organism == 'KN99' && strandedness == 'reverse')
-            """
-            htseq-count -f bam \\
-                        -o ${fastq_simple_name}_htseq_annote.sam \\
-                        -s ${strandedness} \\
-                        -t exon \\
-                        -i gene \\
-                        ${sorted_bam} \\
-                        ${params.KN99_annotation_file} \\
-                        1> ${fastq_simple_name}_read_count.tsv 2> ${fastq_simple_name}_htseq.log
-
-            sed "s/\t//" ${fastq_simple_name}_htseq_annote.sam > ${fastq_simple_name}_no_tab_sam.sam
-
-            samtools view --threads 8 ${sorted_bam} | \\
-            paste - ${fastq_simple_name}_no_tab_sam.sam | \\
-            samtools view --threads 8 -bS -T ${params.KN99_genome} > ${fastq_simple_name}_sorted_aligned_reads_with_annote.bam
-
-            """
-        else if (organism == 'KN99' && strandedness == 'no')
-            """
-            htseq-count -f bam \\
-                        -o ${fastq_simple_name}_htseq_annote.sam \\
-                        -s ${strandedness} \\
-                        -t exon \\
-                        -i gene \\
-                        ${sorted_bam} \\
-                        ${params.KN99_annotation_file_no_strand} \\
-                        1> ${fastq_simple_name}_read_count.tsv 2> ${fastq_simple_name}_htseq.log
-
-            sed "s/\t//" ${fastq_simple_name}_htseq_annote.sam > ${fastq_simple_name}_no_tab_sam.sam
-
-            samtools view --threads 8 ${sorted_bam} | \\
-            paste - ${fastq_simple_name}_no_tab_sam.sam | \\
-            samtools view --threads 8 -bS -T ${params.KN99_genome} > ${fastq_simple_name}_sorted_aligned_reads_with_annote.bam
-
-            """
-        else if (organism == 'H99')
-            """
-            htseq-count -f bam \\
-                        -s ${strandedness} \\
-                        -t exon \\
-                        ${sorted_bam} \\
-                        ${params.H99_annotation_file} \\
-                        1> ${fastq_simple_name}_read_count.tsv 2> ${fastq_simple_name}_htseq.log
-
-            sed "s/\t//" ${fastq_simple_name}_htseq_annote.sam > ${fastq_simple_name}_no_tab_sam.sam
-
-            samtools view --threads 8 ${sorted_bam} | \\
-            paste - ${fastq_simple_name}_no_tab_sam.sam | \\
-            samtools view --threads 8 -bS -T ${params.H99_genome} > ${fastq_simple_name}_sorted_aligned_reads_with_annote.bam
-
-            """
+        """
+        RunHtseqCounts.sh -b /path/to/SORTED/bamfile -a /path/to/annotation/file -t feature_type -i id_attribute -s strandedness -o output_file_name
+        
+        """
 }
 
