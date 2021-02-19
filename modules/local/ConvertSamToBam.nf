@@ -20,6 +20,6 @@ process novoalign {
 
     script:
             """
-            ConvertSamToBam.sh -s /path/to/sam -output_file_name
+            ConvertSamToBam.sh -s /path/to/sam -o output_file_name
             """
 }
