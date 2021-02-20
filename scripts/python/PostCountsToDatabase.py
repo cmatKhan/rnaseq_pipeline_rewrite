@@ -16,6 +16,7 @@ import sys
 import os
 from json import dumps as json_dumps
 import argparse
+import requests
 from urllib.request import HTTPError
 
 # extend python path to include utils dir
@@ -89,11 +90,16 @@ def main(argv):
     qc_dict = qcMetricsToDict(htseq_qc_data, qc_column_dict, args.fastq_file_number)
 
     # try to send qc to database, exit with error if fail
-    if args.post:
+    if args['post']:
         try:
-            postData(args.qc_url, qc_dict)
-        except Exception as e:
-            exit('PostCountsQcToDatabaseError: fastqfilenumber %s failed to update %s for reason %s' %(args.fastq_file_number, args.qc_url, e))
+	    r = requests.post(args.qc_url, data=qc_dict)
+	    r.raise_for_status()
+        except requests.HTTPError as exception:
+	    try:
+	        r = requests.put(args.qc_url+str(args.fastq_file_number.)+'/', data=qc_dict)
+	        r.raise_for_status()
+	    except requests.HTTPError as e:
+	        exit('PostCountsToDatabaseError: could not post or put %s to %s for reason %s' %(args.fastq_file_number, args.qc_url, e))
 
 def qcMetricsToDict(htseq_qc_data, qc_column_dict, sample_number):
     """
