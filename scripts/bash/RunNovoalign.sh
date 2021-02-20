@@ -15,8 +15,11 @@
 #   output: 1> ${output_file_name}.sam
 #           2> ${output_file_name}_novoalign.log
 
+last_line_docstring=16
+
 # utils.sh needs to be in the same directory as this script
-source ./utils.sh
+SOURCEDIR="$(dirname "$(realpath "$0")")"
+source ${SOURCEDIR}/utils.sh
 
 main(){
   # main method, called at bottom of script after all functions read in
@@ -28,18 +31,25 @@ main(){
   # check that necessary software is available
   checkPath novoalign "RunNovalignError: novoalign not found in PATH"
 
-  novoalign -r All -c ${num_cpus} -o SAM -d ${index_path} -f ${fastq_path} 1> ${output_file_name}.sam 2> ${output_file_name}_novoalign.log 
+  novoalign \
+    -r All \
+    -c ${num_cpus} \
+    -o SAM \
+    -d ${index_path} \
+    -f ${fastq_path} \
+    1> ${output_file_name}.sam \
+    2> ${output_file_name}_novoalign.log 
 }
 
 checkInput(){
   # check input, raise errors
   # TODO: should this go to 2 or 1?
   if [[ ! -e $index_path ]]; then
-      echo "RunNovoalignInputError: index does not exist"
+      echo "RunNovoalignInputError: index ${index_path} does not exist"
       exit 1
   fi
   if [[ ! -e $fastq_path ]]; then
-      echo "RunNovoalignInputError: fastq file does not exist"
+      echo "RunNovoalignInputError: fastq ${fastq_path} file does not exist"
       exit 1
   fi
   if [[ !(${fastq_path#*.} == fq.gz || ${fastq_path#*.} == fastq.gz)  ]]; then
@@ -64,7 +74,7 @@ parseArgs(){
 
   while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
     -h | --help )
-      head -16 $0
+      head -${last_line_docstring} $0
       exit
       ;;
     -i | --index )

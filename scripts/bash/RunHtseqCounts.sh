@@ -19,8 +19,11 @@
 #           1> ${output_file_name}_read_count.tsv
 #           2> ${output_file_name}_htseq.log
 
+last_line_docstring=20
+
 # utils.sh needs to be in the same directory as this script
-source ./utils.sh
+SOURCEDIR="$(dirname "$(realpath "$0")")"
+source ${SOURCEDIR}/utils.sh
 
 main(){
     # main method, called at bottom of script after all functions read in
@@ -32,14 +35,14 @@ main(){
     # check that necessary software is available
     checkPath htseq-count "RunHtseqCountsError: htseq-count not found in PATH"
 
-    htseq-count -f bam \\
-                -o ${output_file_name}_htseq_annote.sam \\
-                -s ${strandedness} \\
-                -t ${feature_type} \\
-                -i ${id_attribute} \\
-                ${sorted_bam_path} \\
-                ${annotation_file_gtf} \\
-                1> ${output_file_name}_read_count.tsv \\
+    htseq-count -f bam \
+                -o ${output_file_name}_htseq_annote.sam \
+                -s ${strandedness} \
+                -t ${feature_type} \
+                -i ${id_attribute} \
+                ${sorted_bam_path} \
+                ${annotation_file_gtf} \
+                1> ${output_file_name}_read_count.tsv \
                 2> ${output_file_name}_htseq.log 
 }
 
@@ -47,11 +50,11 @@ checkInput(){
   # check input, raise errors
   # TODO: should this go to >2 or >1?
   if [[ ! -e $sorted_bam_path ]]; then
-      echo "RunHtseqCountsInputError: index does not exist"
+      echo "RunHtseqCountsInputError: sorted_bam ${sorted_bam_path} does not exist"
       exit 1
   fi
   if [[ ! -e $annotation_file_gtf ]]; then
-      echo "RunHtseqCountsInputError: fastq file does not exist"
+      echo "RunHtseqCountsInputError: annotation file ${annotation_file_gtf} does not exist"
       exit 1
   fi
   if [[ !(${sorted_bam_path#*.} == bam || ${fastq_path#*.} == fastq.gz)  ]]; then
@@ -64,11 +67,11 @@ checkInput(){
       exit 1
   fi
   if [[ -z $feature_type ]]; then
-      echo "RunHtseqCountsInputError: output_file_name not specified"
+      echo "RunHtseqCountsInputError: feature_type not specified"
       exit 1
   fi
   if [[ -z $id_attribute ]]; then
-      echo "RunHtseqCountsInputError: output_file_name not specified"
+      echo "RunHtseqCountsInputError: id_attribute not specified"
       exit 1
   fi 
   if [[ -z $strandedness ]]; then
@@ -84,7 +87,7 @@ parseArgs(){
 
   while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
     -h | --help )
-      head -16 $0
+      head -${last_line_docstring} $0
       exit
       ;;
     -b | --sorted_bam_path )

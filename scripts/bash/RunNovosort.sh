@@ -17,8 +17,11 @@
 #   output: 1> ${output_file_name}_sorted.bam
 #           2> ${output_file_name}_novosort.log
 
+last_line_docstring=18
+
 # utils.sh needs to be in the same directory as this script
-source ./utils.sh
+SOURCEDIR="$(dirname "$(realpath "$0")")"
+source ${SOURCEDIR}/utils.sh
 
 main(){
   # main method, called at bottom of script after all functions read in
@@ -30,14 +33,18 @@ main(){
   # check that necessary software is available
   checkPath novoalign "RunNovosortError: novosort not found in PATH"
 
-  novosort ${bam_file} --threads ${num_threads} --markDuplicates -o ${output_file_name}_sorted.bam 2> ${output_file_name}_novosort.log
+  novosort ${bam_file} \
+    --threads ${num_threads} \
+    --markDuplicates \
+    -o ${output_file_name}_sorted.bam \
+    2> ${output_file_name}_novosort.log
 }
 
 checkInput(){
   # check input, raise errors
   # TODO: should this go to 2 or 1?
   if [[ ! -e $bam_file ]]; then
-      echo "RunNovosortInputError: bam_file does not exist"
+      echo "RunNovosortInputError: bam_file ${bam_file} does not exist"
       exit 1
   fi
   if [[ -z $output_file_name ]]; then
@@ -57,7 +64,7 @@ parseArgs(){
 
   while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
     -h | --help )
-      head -16 $0
+      head -${last_line_docstring} $0
       exit
       ;;
     -b | --bam_file )

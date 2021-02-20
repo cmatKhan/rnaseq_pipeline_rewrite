@@ -6,15 +6,18 @@
 
 #  input:
 #      -h --help should display this docstring
-#      -b --bam_file path to SORTED bam file
+#      -b --sorted_bam path to SORTED bam file
 #      -s --htseq_annotatations the annotation file output (optionally) by htseq
 #      -g --genome path to genome fasta
 #      -o --output_file_name NO PERIODS NO FILE EXTENSIONS
 
 #   output: 1> ${output_name}_sorted_annotated.bam
 
+last_line_docstring=14
+
 # utils.sh needs to be in the same directory as this script
-source ./utils.sh
+SOURCEDIR="$(dirname "$(realpath "$0")")"
+source ${SOURCEDIR}/utils.sh
 
 main(){
   # main method, called at bottom of script after all functions read in
@@ -26,24 +29,30 @@ main(){
   # check that necessary software is available
   checkPath samtools "AppendHtseqAnnoteError: samtools not found in PATH"
 
-  samtools view --threads 8 ${sorted_bam} | \\
-  paste - $(sed "s/\t//" ${htseq_annotations}) | \\
-  samtools view --threads 8 -bS -T ${genome_fasta} > ${output_name}_sorted_annotated.bam
+  tmp=${output_file_name}_tmp_htseq_annote_parsed.txt
+
+  sed "s/\t//" ${htseq_annotations} > $tmp
+
+  samtools view --threads 8 ${sorted_bam} | \
+  paste - $tmp | \
+  samtools view --threads 8 -bS -T ${genome_fasta} > ${output_file_name}_sorted_annotated.bam
+
+  rm $tmp
 }
 
 checkInput(){
   # check input, raise errors
   # TODO: should this go to 2 or 1?
-  if [[ ! -e $sorted_bam_path ]]; then
-      echo "AppendHtseqAnnoteInputError: the sam file ${sam_path} does not exist"
+  if [[ ! -e $sorted_bam ]]; then
+      echo "AppendHtseqAnnoteInputError: the sorted bam file ${sorted_bam} does not exist"
       exit 1
   fi
   if [[ ! -e $htseq_annotations ]]; then
-      echo "AppendHtseqAnnoteInputError: the sam file ${sam_path} does not exist"
+      echo "AppendHtseqAnnoteInputError: the htseq annotation file ${htseq_annotations} does not exist"
       exit 1
   fi
   if [[ ! -e $genome_fasta ]]; then
-      echo "AppendHtseqAnnoteInputError: the sam file ${sam_path} does not exist"
+      echo "AppendHtseqAnnoteInputError: the genome fasta file ${genome_fasta} does not exist"
       exit 1
   fi
   if [[ -z $output_file_name ]]; then
@@ -59,11 +68,11 @@ parseArgs(){
 
   while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
     -h | --help )
-      head -16 $0
+      head -${last_line_docstring} $0
       exit
       ;;
-    -b | --sorted_bam_path )
-      shift; sorted_bam_path=$1
+    -b | --sorted_bam )
+      shift; sorted_bam=$1
       ;;
     -s | --htseq_annotations )
       shift; htseq_annotations=$1

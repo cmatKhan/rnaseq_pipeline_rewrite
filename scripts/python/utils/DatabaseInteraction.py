@@ -1,4 +1,5 @@
-from requests import post
+import requests
+from urllib.request import HTTPError
 
 def postData(url, data, **kwargs):
     """
@@ -7,5 +8,8 @@ def postData(url, data, **kwargs):
         :params data: the body of the request
         :throws: HTTPError
     """
-    r = requests.post(url, data=data)
-    r.raise_for_status()
+    try:
+        r = requests.post(url, data=data)
+        r.raise_for_status()
+    except HTTPError:
+        raise Exception(r.reason)

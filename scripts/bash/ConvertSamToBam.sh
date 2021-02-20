@@ -11,8 +11,11 @@
 
 #   output: 1> sam_simple_name.bam
 
+last_line_docstring=12
+
 # utils.sh needs to be in the same directory as this script
-source ./utils.sh
+SOURCEDIR="$(dirname "$(realpath "$0")")"
+source ${SOURCEDIR}/utils.sh
 
 main(){
   # main method, called at bottom of script after all functions read in
@@ -54,7 +57,7 @@ parseArgs(){
 
   while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
     -h | --help )
-      head -16 $0
+      head -${last_line_docstring} $0
       exit
       ;;
     -s | --sam_path )

@@ -13,8 +13,11 @@
 
 #   output: 1> ${output_file_name}_coverage.bed
 
+last_line_docstring=14
+
 # utils.sh needs to be in the same directory as this script
-source ./utils.sh
+SOURCEDIR="$(dirname "$(realpath "$0")")"
+source ${SOURCEDIR}/utils.sh
 
 # TODO: store gff2bed annotation file output in genome_files
 
@@ -38,11 +41,11 @@ checkInput(){
   # check input, raise errors
   # TODO: should this go to 2 or 1?
   if [[ ! -e $annotation_file_gff ]]; then
-      echo "GenomeCoverageError: bam_file does not exist"
+      echo "GenomeCoverageError: annotation file ${annotation_file_gff} does not exist"
       exit 1
   fi
-  if [[ -z $bam_file ]]; then
-      echo "GenomeCoverageError: output_file_name file does not exist"
+  if [[ ! -e $bam_file ]]; then
+      echo "GenomeCoverageError: bam file ${bam_file} file does not exist"
       exit 1
   fi
   if [[ -z $output_file_name ]]; then
@@ -58,7 +61,7 @@ parseArgs(){
 
   while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
     -h | --help )
-      head -16 $0
+      head -${last_line_docstring} $0
       exit
       ;;
     -a | --annotation_file_gff )
