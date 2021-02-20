@@ -3,7 +3,6 @@ work/
 data/
 results/
 .DS_Store
-tests/
 testing/
 testing*
 */__pycache___
@@ -11,3 +10,5 @@ scripts/python/rnaseq_tools/__pycache___
 scripts/python/__pycache___
 *.pyc
 .idea/*
+.vscode/
+.vscode/*
