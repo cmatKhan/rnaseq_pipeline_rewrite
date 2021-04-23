@@ -19,16 +19,34 @@ memory_request = "20G"
 counts_url = "http://13.59.167.2/api/Counts/"
 qc_url = "http://13.59.167.2/api/QualityAssess/"
 
-post = true
+post = false
 
 scratch_sequence = file(params.scratch_sequence)
+
+process fastQC {
+
+    executor "slurm"
+    memory memory_request
+    module "fastqc/0.11.7-java-11"
+    publishDir "$params.align_count_results/$run_directory/fastqc", mode:"copy", overwite: true, pattern: "*_fastqc.zip"
+
+    input:
+        tuple val(run_directory), file(fastq_file), val(organism), val(strandedness), val(fastq_file_number) from fastq_filelist
+    output:
+        file("${fastq_simple_name}_fastqc.zip")
+    script:
+        fastq_simple_name = fastq_file.getSimpleName()
+        """
+        /home/chasem/rnaseq_pipeline_rewrite/scripts/bash/RunFastQC.sh -f $fastq_file
+        """
+}
 
 process Novoalign {
 
     executor "slurm"
     cpus num_cpus
     memory memory_request
-    module "novoalign"
+    module "novoalign/3.09.01"
     publishDir "$params.align_count_results/$run_directory/logs", mode:"copy", overwite: true, pattern: "*.log"
 
     input:
@@ -48,31 +66,13 @@ process Novoalign {
 // split into two for two separate processes
 bam_align_ch.into { bam_htseq_ch; bam_novosort_ch }
 
-// test_out.view { "recieved: $it"}
-
-// process ParseAlignmentLog {
-
-//     executor "slurm"
-//     cpus 8
-//     memory "20G"
-//     beforeScript "ml rnaseq_pipeline"
-
-
-//     input:
-//         tuple val(fastq_file_number), val(fastq_simple_name), file("${fastq_simple_name}_novoalign.log") from novoalign_log_ch
-
-//     script:
-//             """
-//             /home/chasem/rnaseq_pipeline_rewrite/scripts/python/PostAlignmentLogToDatabase.py
-//             """
-// }
-
 process HtseqCount {
 
     executor "slurm"
     memory "10G"
-    module "miniconda"
-    conda "htseq"
+    // module "miniconda"
+    // conda "htseq"
+    module "htseq/0.9.1"
     publishDir "$params.align_count_results/$run_directory/logs", mode:"copy", overwite: true, pattern: "*.log"
     publishDir "$params.align_count_results/$run_directory/count", mode:"copy", overwite: true, pattern: "*_read_count.tsv"
     publishDir "$params.align_count_results/$run_directory/align", mode:"copy", overwite: true, pattern: "*.sam"
@@ -104,32 +104,32 @@ process HtseqCount {
         """
 }
 
-process postHtseqCountsToDatabase {
+// process postHtseqCountsToDatabase {
 
-    executor "local"
-    beforeScript "ml rnaseq_pipeline"
-    publishDir "$params.align_count_results/$run_directory/count", mode:"copy", overwite: true, pattern: "*_counts.csv"
-    publishDir "$params.align_count_results/$run_directory/log", mode:"copy", overwite: true, pattern: "*_htseq_qc.csv"
+//     executor "local"
+//     beforeScript "ml rnaseq_pipeline"
+//     publishDir "$params.align_count_results/$run_directory/count", mode:"copy", overwite: true, pattern: "*_counts.csv"
+//     publishDir "$params.align_count_results/$run_directory/log", mode:"copy", overwite: true, pattern: "*_htseq_qc.csv"
 
-    input:
-        tuple val(fastq_file_number), val(run_directory), val(fastq_simple_name), file(read_count_tsv) from htseq_count_ch
-    output:
-        tuple file("${fastq_simple_name}_counts.csv"), file("${fastq_simple_name}_htseq_qc.csv") into parsed_counts_ch
+//     input:
+//         tuple val(fastq_file_number), val(run_directory), val(fastq_simple_name), file(read_count_tsv) from htseq_count_ch
+//     output:
+//         tuple file("${fastq_simple_name}_counts.csv"), file("${fastq_simple_name}_htseq_qc.csv") into parsed_counts_ch
         
 
-    // # output: ${sample_name}_counts.csv, ${sample_name}_htseq_qc.csv
-    // # database_interaction: post to url
+//     // # output: ${sample_name}_counts.csv, ${sample_name}_htseq_qc.csv
+//     // # database_interaction: post to url
 
-    script:
-    if (post)
-    """
-        /home/chasem/rnaseq_pipeline_rewrite/scripts/python/PostCountsToDatabase.py -c $read_count_tsv -n $fastq_simple_name -i $fastq_file_number -cu $counts_url -qu $qc_url
-    """
-    else
-    """
-        /home/chasem/rnaseq_pipeline_rewrite/scripts/python/PostCountsToDatabase.py -c $read_count_tsv -n $fastq_simple_name -i $fastq_file_number -cu $counts_url -qu $qc_url --no-post
-    """
-}
+//     script:
+//     if (post)
+//     """
+//         /home/chasem/rnaseq_pipeline_rewrite/scripts/python/PostCountsToDatabase.py -c $read_count_tsv -n $fastq_simple_name -i $fastq_file_number -cu $counts_url -qu $qc_url
+//     """
+//     else
+//     """
+//         /home/chasem/rnaseq_pipeline_rewrite/scripts/python/PostCountsToDatabase.py -c $read_count_tsv -n $fastq_simple_name -i $fastq_file_number -cu $counts_url -qu $qc_url --no-post
+//     """
+// }
 
 process Novosort {
 
@@ -173,26 +173,5 @@ process IndexFinalBam {
         samtools index $sorted_annoted_bam
     """
 }
-
-// process MarkerCoverageToDatabase {
-
-//     executor "slurm"
-//     cpus 8
-//     memory "20G"
-//     beforeScript "ml rnaseq_pipeline"
-
-
-//     input:
-//         tuple val(fastq_file_number), val(fastq_simple_name), file("${fastq_simple_name}_novoalign.log") into novoalign_log_ch
-
-//     script:
-//             """
-//             /home/chasem/rnaseq_pipeline_rewrite/scripts/python/PostMarkerCoverageToDatabase.py
-//             """
-// }
-
-// workflow.onComplete {
-// 	log.info ( workflow.success ? "\nDone! Open the following report in your browser --> $params.outdir/multiqc_report.html\n" : "Oops .. something went wrong" )
-// }
 
 
