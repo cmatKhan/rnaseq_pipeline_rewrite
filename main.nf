@@ -7,6 +7,7 @@ Channel
     .splitCsv(header:true)
     .map{row-> tuple(row.runDirectory, file(row.fastqFileName), row.organism, row.strandedness, row.fastqFileNumber) }
     .set { fastq_filelist }
+    .separate(fastqc_ch; aligner_input_ch)
 
 index_map = [ "KN99": file(params.KN99_novoalign_index), "S288C_R64": file(params.S288C_R64_novoalign_index)]
 
@@ -23,8 +24,8 @@ post = false
 
 scratch_sequence = file(params.scratch_sequence)
 
-// split into two for two separate processes
-fastq_filelist.into { fastqc_ch; aligner_input_ch }
+// // split into two for two separate processes
+// fastq_filelist.into { fastqc_ch; aligner_input_ch }
 
 process fastQC {
 
