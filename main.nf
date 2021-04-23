@@ -34,7 +34,7 @@ process fastQC {
     publishDir "$params.align_count_results/$run_directory/fastqc", mode:"copy", overwite: true, pattern: "*_fastqc.zip"
 
     input:
-        tuple val(run_directory), file(fastq_file), val(organism), val(strandedness), val(fastq_file_number) from fastq_filelist
+        tuple val(run_directory), file(fastq_file), val(organism), val(strandedness), val(fastq_file_number) from fastqc_ch
     output:
         file("${fastq_simple_name}_fastqc.zip")
     script:
