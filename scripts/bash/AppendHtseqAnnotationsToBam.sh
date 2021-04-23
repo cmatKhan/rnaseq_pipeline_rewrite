@@ -31,13 +31,13 @@ main(){
 
   tmp=${output_file_name}_tmp_htseq_annote_parsed.txt
 
-  sed "s/\t//" ${htseq_annotations} > $tmp
+  grep -oh 'XF:Z:.*' ${htseq_annotations} > $tmp
 
   samtools view --threads 8 ${sorted_bam} | \
   paste - $tmp | \
-  samtools view --threads 8 -bS -T ${genome_fasta} > ${output_file_name}_sorted_annotated.bam
+  samtools view --threads 8 -b -T ${genome_fasta} > ${output_file_name}_sorted_annotated.bam
 
-  rm $tmp
+  # rm $tmp
 }
 
 checkInput(){

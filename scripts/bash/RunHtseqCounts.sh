@@ -8,7 +8,7 @@
 
 #  input:
 #      -h --help should display this docstring
-#      -b --sorted_bam_path to SORTED bam file
+#      -b --path to sam file
 #      -a --annotation_file_gtf to annotation file (gtf)
 #      -t --feature_type see flag specification at https://htseq.readthedocs.io/en/release_0.11.1/count.html
 #      -i --id_attribute see flag specification at https://htseq.readthedocs.io/en/release_0.11.1/count.html
@@ -40,7 +40,7 @@ main(){
                 -s ${strandedness} \
                 -t ${feature_type} \
                 -i ${id_attribute} \
-                ${sorted_bam_path} \
+                ${bam} \
                 ${annotation_file_gtf} \
                 1> ${output_file_name}_read_count.tsv \
                 2> ${output_file_name}_htseq.log 
@@ -49,16 +49,16 @@ main(){
 checkInput(){
   # check input, raise errors
   # TODO: should this go to >2 or >1?
-  if [[ ! -e $sorted_bam_path ]]; then
-      echo "RunHtseqCountsInputError: sorted_bam ${sorted_bam_path} does not exist"
+  if [[ ! -e $bam ]]; then
+      echo "RunHtseqCountsInputError: bam ${bam} does not exist"
       exit 1
   fi
   if [[ ! -e $annotation_file_gtf ]]; then
       echo "RunHtseqCountsInputError: annotation file ${annotation_file_gtf} does not exist"
       exit 1
   fi
-  if [[ !(${sorted_bam_path#*.} == bam || ${fastq_path#*.} == fastq.gz)  ]]; then
-      echo "RunHtseqCountsInputError: bam file does not end in .bam. Are you sure this is a bam file?"
+  if [[ !(${bam#*.} == bam )  ]]; then
+      echo "RunHtseqCountsInputError: sam file does not end in .sam. Are you sure this is a sam file?"
       exit 1
   fi
   # TODO: add error checking -- should not include any periods
@@ -90,8 +90,8 @@ parseArgs(){
       head -${last_line_docstring} $0
       exit
       ;;
-    -b | --sorted_bam_path )
-      shift; sorted_bam_path=$1
+    -f | --bam )
+      shift; bam=$1
       ;;
     -a | --annotation_file_gtf )
       shift; annotation_file_gtf=$1

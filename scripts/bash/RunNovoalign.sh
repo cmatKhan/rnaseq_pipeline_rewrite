@@ -12,7 +12,7 @@
 #      -o --output filename NO PERIODS NO FILE EXTENSIONS
 #      -c --num_cpus is the number of cpus
 
-#   output: 1> ${output_file_name}.sam
+#   output: 1> ${output_file_name}.bam
 #           2> ${output_file_name}_novoalign.log
 
 last_line_docstring=16
@@ -32,12 +32,12 @@ main(){
   checkPath novoalign "RunNovalignError: novoalign not found in PATH"
 
   novoalign \
-    -r All \
+    -r All 100 \
     -c ${num_cpus} \
-    -o SAM \
+    -o BAM \
     -d ${index_path} \
     -f ${fastq_path} \
-    1> ${output_file_name}.sam \
+    1> ${output_file_name}.bam \
     2> ${output_file_name}_novoalign.log 
 }
 

@@ -30,41 +30,35 @@ def main(argv):
 
     ################################ set name variables ###################################
     # names of the columns (there are three)
-    col_names = ['chr', 'bp', 'depth']
-    # for post data
+    locus_identifier = 'gene_id'
     primary_key = 'fastqFileNumber'
-    data_column = 'coverage'
+    data_column = 'proteinCodingCounted'
     #######################################################################################
 
-    # get the filename from the coverage file
-    sample_name = args.coverage_file.replace("_coverage.bed", "")
+    counts_df = pd.read_csv(args.count_file)
 
-    # read in count file
-    coverage_df = pd.read_csv(args.coverage_file, sep='\t', names=col_names)
-
-    # get the count dict in structure {fastqFileName: [counts]}
-    coverage_row_dict = coverage_df.to_dict(orient="records")
-    
-    coverage_dict = {}
-    coverage_dict.setdefault(sample_name, coverage_row_dict)
+    protein_coding_counts_df = counts_df[counts_df[locus_identifier].str.startswith("CKF44_")]
+    protein_coding_counted = protein_coding_counts_df.iloc[:,1].sum()
 
     # this is the body of the request. fastqFileNumber is the foreign key of Counts
-    data = {primary_key: args.fastq_file_number, data_column: json_dumps(coverage_dict)}
-    print(data)
+    data = {primary_key: args.fastq_file_number, data_column: str(protein_coding_counted)}
 
     # try to send count data to database, exit with error message if fail
     if args.post:
         try:
-            postData(args.url, data)
-        except Exception as e:
-            exit('PostCountsToDatabaseError: fastqfilenumber %s failed to update %s for reason %s' %(fastq_file_number, url, e))
+	    r = requests.post(args.url, data=data)
+	    r.raise_for_status()
+        except requests.HTTPError as exception:
+	    try:
+	        r = requests.put(args.qc_url+str(args.fastq_file_number.)+'/', data=data)
+	        r.raise_for_status()
+	    except requests.HTTPError as e:
+	        exit('PostCountsToDatabaseError: could not post or put %s to %s for reason %s' %(args.fastq_file_number, args.qc_url, e))
 
 def parseArgs(argv):
     parser = argparse.ArgumentParser(description="This script summarizes the output from pipeline wrapper.")
-    parser.add_argument("-c", "--coverage_file", required=True,
-                        help="[REQUIRED] Directory with files in the following subdirectories: align, count, logs. Output from raw_count.py and log2cpm.R must be in count directory.")
-    parser.add_argument("-n", "--sample_name", required=True,
-                        help="[REQUIRED] Should be unique. Suggestion: use the fastq name stripped of path and file extension")
+    parser.add_argument("-c", "--count_file", required=True,
+                        help="[REQUIRED] htseq output as csv PARSED so only gene counts (no qc) are included")
     parser.add_argument("-i", "--fastq_file_number", required=True,
                         help="[REQUIRED] fastqFileNumber, the foreign key of QualityAssessment table which links back to FastqFiles table")
     parser.add_argument("-u", "--url", required=True,

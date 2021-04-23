@@ -7,6 +7,7 @@
 #  input:
 #      -h --help should display this docstring
 #      -s --sam_path path to sam file
+#      -g --genome_fasta path to genome fasta
 #      -o --output_file_name NO PERIODS NO FILE EXTENSIONS
 
 #   output: 1> sam_simple_name.bam
@@ -27,10 +28,7 @@ main(){
   # check that necessary software is available
   checkPath samtools "ConvertSamToBamError: samtools not found in PATH"
 
-  local sam_basename=$(basename $sam_path)
-  local sam_simple_name=${sam_basename%.sam}
-
-  samtools view -bS $sam_path 1> ${output_file_name}.bam
+  samtools view -b -T $genome  $sam_path 1> ${output_file_name}.bam
 }
 
 checkInput(){
@@ -40,11 +38,15 @@ checkInput(){
       echo "ConvertSamToBamInputError: the sam file ${sam_path} does not exist"
       exit 1
   fi
+    if [[ ! -e $genome ]]; then
+      echo "ConvertSamToBamInputError: the genome file ${genome} does not exist"
+      exit 1
+  fi
   if [[ -z $output_file_name ]]; then
       echo "ConvertSamToBamInputError: output_file_name file does not exist"
       exit 1
   fi
-  if [[ !(${sam_path#*.} == sam || ${fastq_path#*.} == fastq.gz)  ]]; then
+  if [[ !(${sam_path#*.} == sam)  ]]; then
       echo "ConvertSamToBamInputError: the sam file does not end in .sam"
       exit 1
   fi 
@@ -62,6 +64,9 @@ parseArgs(){
       ;;
     -s | --sam_path )
       shift; sam_path=$1
+      ;;
+    -g | --genome_fasta )
+      shift; genome=$1
       ;;
     -o | --output_file_name )
       shift; output_file_name=$1
