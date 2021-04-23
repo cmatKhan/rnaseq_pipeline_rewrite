@@ -23,6 +23,9 @@ post = false
 
 scratch_sequence = file(params.scratch_sequence)
 
+// split into two for two separate processes
+fastq_filelist.into { fastqc_ch; aligner_input_ch }
+
 process fastQC {
 
     executor "slurm"
@@ -50,7 +53,7 @@ process Novoalign {
     publishDir "$params.align_count_results/$run_directory/logs", mode:"copy", overwite: true, pattern: "*.log"
 
     input:
-        tuple val(run_directory), file(fastq_file), val(organism), val(strandedness), val(fastq_file_number) from fastq_filelist
+        tuple val(run_directory), file(fastq_file), val(organism), val(strandedness), val(fastq_file_number) from aligner_input_ch
     output:
         tuple val(fastq_file_number), val(run_directory), val(fastq_simple_name), val(organism), val(strandedness), file("${fastq_simple_name}.bam") into bam_align_ch
         tuple val(fastq_file_number), val(fastq_simple_name), file("${fastq_simple_name}_novoalign.log") into novoalign_log_ch

@@ -35,7 +35,7 @@ checkInput(){
   # check input, raise errors
   # TODO: should this go to 2 or 1?
   if [[ ! -e $fastq_path ]]; then
-      echo "RunNovoalignInputError: fastq ${fastq_path} file does not exist"
+      echo "RunFastQCInputError: fastq ${fastq_path} file does not exist"
       exit 1
   fi
 }
