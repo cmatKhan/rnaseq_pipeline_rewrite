@@ -31,14 +31,14 @@ main(){
   # check that necessary software is available
   checkPath novoalign "RunNovalignError: novoalign not found in PATH"
 
-  novoalign \
-    -r All 100 \
+  echo "novoalign \
+    -r All \
     -c ${num_cpus} \
-    -o BAM \
+    -o SAM \
     -d ${index_path} \
     -f ${fastq_path} \
     1> ${output_file_name}.bam \
-    2> ${output_file_name}_novoalign.log 
+    2> ${output_file_name}_novoalign.log" 
 }
 
 checkInput(){
