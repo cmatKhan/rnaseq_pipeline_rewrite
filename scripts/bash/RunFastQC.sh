@@ -28,7 +28,7 @@ main(){
   # check that necessary software is available
   checkPath fastqc "RunFastQCError: fastqc not found in PATH"
 
-  novoalign ${fastq_path}
+  fastqc ${fastq_path}
 }
 
 checkInput(){

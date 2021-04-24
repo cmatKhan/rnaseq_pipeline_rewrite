@@ -34,7 +34,7 @@ main(){
   novoalign \
     -r All 100 \
     -c ${num_cpus} \
-    -o BAM \
+    -o SAM \
     -d ${index_path} \
     -f ${fastq_path} \
     1> ${output_file_name}.bam \
